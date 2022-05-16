@@ -1,8 +1,6 @@
-from operator import itemgetter
 import warnings
 
 warnings.filterwarnings("ignore")
-import re
 from urllib import request
 from bs4 import BeautifulSoup as bs
 import gzip
@@ -85,4 +83,3 @@ def main():
 
 # 主函数
 # main()
-main()

@@ -19,4 +19,4 @@ def main():
     # 在 html(浏览器) 中渲染图表
     c.render()
 
-main()
+# main()

@@ -63,7 +63,7 @@ def main():
             loc = dangerPlaceLocation[item]
             file.writelines(item+' '+loc[0]+' '+loc[1]+'\n')
 
-main()
+# main()
     
 
 '''
