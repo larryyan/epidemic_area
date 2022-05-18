@@ -4,7 +4,7 @@ from pyecharts.charts import Geo
 from pyecharts.globals import ChartType, SymbolType
 
 def main():
-    dangerLocation = [l.split('\n')[0] for l in open("location.txt", "r").readlines()]
+    dangerLocation = [l.split('\n')[0] for l in open("data/location.txt", "r").readlines()]
 
     # 链式调用
     c = Geo().add_schema(maptype="北京")

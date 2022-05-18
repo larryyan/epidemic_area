@@ -46,7 +46,7 @@ def getGDLocation(input):
     return ans
 
 def main():
-    dangerPlace = [l.split('\n')[0] for l in open("data.txt", "r").readlines()]
+    dangerPlace = [l.split('\n')[0] for l in open("data/data.txt", "r").readlines()]
     
     dangerPlaceLocation = {}
     key = open('key.txt','r').readlines()[0]
@@ -58,7 +58,7 @@ def main():
         dangerPlaceLocation.update({item: [x, y]})
     
     # print(dangerPlaceLocation)
-    with open("location.txt","w") as file:
+    with open("data/location.txt","w") as file:
         for item in dangerPlaceLocation:
             loc = dangerPlaceLocation[item]
             file.writelines(item+' '+loc[0]+' '+loc[1]+'\n')
