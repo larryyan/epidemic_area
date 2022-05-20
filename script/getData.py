@@ -30,15 +30,14 @@ def getWeb():
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36"
 
     }
-    url = 'https://s.bjd.com.cn/api/search/get?page=1&keyboard=%E5%8C%97%E4%BA%AC%E6%96%B0%E5%A2%9E&sort=publishTime'
+    url = 'https://s.bjd.com.cn/api/search/get?page=1&keyboard=%E5%8C%97%E4%BA%AC%E6%98%A8%E6%97%A5%E6%96%B0%E5%A2%9E&sort=publishTime'
     resp = request.Request(url, headers=HEADERS)
     resp = request.urlopen(resp)
     json_data = json.loads(resp.read())['data']['data']
 
     for item in json_data:
         title = item['title']
-        if title.find('<font class="keyword-style">北京</font><font class="keyword-style">新增')==-1 \
-            or title.find('本土感染者')==-1:
+        if title.find('一图速览')!=-1:
             continue
         return item['title_url']
 
