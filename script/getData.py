@@ -36,6 +36,8 @@ def getWeb():
     json_data = json.loads(resp.read())['data']['data']
 
     for item in json_data:
+        if item['catname'] != '首都':
+            continue
         title = item['title']
         if title.find('一图速览')!=-1:
             continue
@@ -65,13 +67,15 @@ def getPatientList(url):  # 参数为url
     patientList_p = article_text[0].find_all('p')
 
     patientList = []
+    patientNum = []
 
     for item in patientList_p:
         if item.text.find('现住')==-1 or (item.text.find('确诊病例')==-1 and item.text.find('感染者')==-1):
             continue
         patientList.append(item.text)
+        patientNum.append(item.text.count('、')+1)
 
-    return patientList
+    return patientList, patientNum
 
 
 def main():
@@ -79,7 +83,7 @@ def main():
     # newsWeb = '//www.takefoto.cn/news/2022/05/15/10087493.shtml'
     print(newsWeb)
 
-    PatientList = getPatientList('https:'+newsWeb)
+    PatientList, PatientNumber = getPatientList('https:'+newsWeb)
     
     dangerPlace = []
     for item in PatientList:
@@ -91,10 +95,15 @@ def main():
             beg = max(beg, item.find('位于', 0, end)+2)
         print(item[beg:end])
         dangerPlace.append(item[beg:end])
-    with open("data/data.txt","w") as f:
+    
+    with open("data/data.txt","w") as f1:
         for item in dangerPlace:
-            f.writelines(item+'\n')
+            f1.writelines(item+'\n')
+    
+    with open("data/number.txt","w") as f2:
+        for item in PatientNumber:
+            f2.writelines(str(item)+'\n')
 
 
 # 主函数
-# main()
+main()
