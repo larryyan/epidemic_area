@@ -10,12 +10,15 @@
 ## 使用方式
 
 - 安装requirements.txt中的依赖
+  ```shell
+  pip install -r requirements.txt
+  ```
 - 创建key.txt 输入自己的高德地图key（前往[高德开放平台](https://console.amap.com/dev/key/app)申请）
 - 运行
 
-```shell
-python3 map.py
-```
+  ```shell
+  python map.py
+  ```
 
 - 打开render.html即可查看地图
 

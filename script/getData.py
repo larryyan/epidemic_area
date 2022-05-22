@@ -1,4 +1,5 @@
 from cgitb import text
+from tkinter import E
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -69,7 +70,6 @@ def getPatientNumber(string):
 def getPatientList(url):  # 参数为url
 
     requrl = url
-    print(requrl)
     USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36"
     HEADERS = {
 
@@ -104,20 +104,20 @@ def getPatientList(url):  # 参数为url
 
 
 def main():
-    newsWeb = getWeb()
-    # newsWeb = '//www.takefoto.cn/news/2022/05/15/10087493.shtml'
-    print(newsWeb)
+    try:
+        newsWeb = getWeb()
+    except Exception as e:
+        print("无法获取网页\n", e)
 
-    PatientDict = getPatientList('https:'+newsWeb)
-    
-    with open("data/data.txt","w") as f1:
+    try:
+        PatientDict = getPatientList('https:'+newsWeb)
+    except Exception as e:
+        print("无法读取病例数据\n", e)
+
+    with open("data/location.txt","w") as f1:
         for item in PatientDict.keys():
             f1.writelines(item+'\n')
     
     with open("data/number.txt","w") as f2:
         for item in PatientDict.values():
             f2.writelines(str(item)+'\n')
-
-
-# 主函数
-# main()
