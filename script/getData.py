@@ -1,3 +1,4 @@
+from cgitb import text
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -5,6 +6,7 @@ from urllib import request
 from bs4 import BeautifulSoup as bs
 import gzip
 import json
+import re
 
 
 # 分析首页函数
@@ -45,6 +47,23 @@ def getWeb():
 
     return None
 
+def getPatientNumber(string):
+    end = string.find('：')
+    def num(text):
+        dunhao = text.find('、')
+        if dunhao == -1:
+            num_list = re.findall(r"\d+", text)
+            if len(num_list) == 1:
+                return 1
+            else:
+                return int(num_list[1]) - int(num_list[0])
+        number = num(text[dunhao+1:])
+        num_list = re.findall(r"\d+", text[:dunhao])
+        if len(num_list) == 1:
+            return 1 + number
+        else:
+            return int(num_list[1]) - int(num_list[0]) + number
+    return num(string[:end])
 
 # 爬取患者函数
 def getPatientList(url):  # 参数为url
@@ -66,16 +85,22 @@ def getPatientList(url):  # 参数为url
     article_text = soup.find_all('div', class_='bjd-article-centent')
     patientList_p = article_text[0].find_all('p')
 
-    patientList = []
-    patientNum = []
+    patientDict = {}
 
     for item in patientList_p:
         if item.text.find('现住')==-1 or (item.text.find('确诊病例')==-1 and item.text.find('感染者')==-1):
             continue
-        patientList.append(item.text)
-        patientNum.append(item.text.count('、')+1)
+        beg = item.text.find('现住')+2
+        end = item.text.find('。', beg)
+        if item.text.find('，', beg)!=-1:
+            end = min(end, item.text.find('，', beg))
+        if item.text.find('位于', 0, end)!=-1:
+            beg = max(beg, item.text.find('位于', 0, end)+2)
+        dangerPlace = item.text[beg:end]
+        current_patient_number = patientDict.get(dangerPlace, 0)
+        patientDict[dangerPlace] = getPatientNumber(item.text) + current_patient_number
 
-    return patientList, patientNum
+    return patientDict
 
 
 def main():
@@ -83,27 +108,16 @@ def main():
     # newsWeb = '//www.takefoto.cn/news/2022/05/15/10087493.shtml'
     print(newsWeb)
 
-    PatientList, PatientNumber = getPatientList('https:'+newsWeb)
-    
-    dangerPlace = []
-    for item in PatientList:
-        beg = item.find('现住')+2
-        end = item.find('。', beg)
-        if item.find('，', beg)!=-1:
-            end = min(end, item.find('，', beg))
-        if item.find('位于', 0, end)!=-1:
-            beg = max(beg, item.find('位于', 0, end)+2)
-        print(item[beg:end])
-        dangerPlace.append(item[beg:end])
+    PatientDict = getPatientList('https:'+newsWeb)
     
     with open("data/data.txt","w") as f1:
-        for item in dangerPlace:
+        for item in PatientDict.keys():
             f1.writelines(item+'\n')
     
     with open("data/number.txt","w") as f2:
-        for item in PatientNumber:
+        for item in PatientDict.values():
             f2.writelines(str(item)+'\n')
 
 
 # 主函数
-main()
+# main()
