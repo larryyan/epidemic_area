@@ -1,5 +1,4 @@
 from cgitb import text
-from tkinter import E
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -57,13 +56,13 @@ def getPatientNumber(string):
             if len(num_list) == 1:
                 return 1
             else:
-                return int(num_list[1]) - int(num_list[0])
+                return int(num_list[1]) - int(num_list[0]) + 1
         number = num(text[dunhao+1:])
         num_list = re.findall(r"\d+", text[:dunhao])
         if len(num_list) == 1:
             return 1 + number
         else:
-            return int(num_list[1]) - int(num_list[0]) + number
+            return int(num_list[1]) - int(num_list[0]) + 1 + number
     return num(string[:end])
 
 # 爬取患者函数
