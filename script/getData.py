@@ -37,15 +37,21 @@ def getWeb():
     resp = request.urlopen(resp)
     json_data = json.loads(resp.read())['data']['data']
 
+    solution_url = ''
+    issue_time = '0'
+
     for item in json_data:
+        if issue_time != '0' and issue_time != item['issue_time']:
+            break
         if item['catname'] != '首都':
             continue
         title = item['title']
         if title.find('一图速览')!=-1:
             continue
-        return item['title_url']
+        solution_url = item['title_url']
+        issue_time = item['issue_time']
 
-    return None
+    return solution_url
 
 def getPatientNumber(string):
     end = string.find('：')
