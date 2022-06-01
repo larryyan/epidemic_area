@@ -55,6 +55,8 @@ def getWeb():
 
 def getPatientNumber(string):
     end = string.find('：')
+    if re.findall(r"\d+", string[:end]) == []:
+        return 1
     def num(text):
         dunhao = text.find('、')
         if dunhao == -1:
@@ -73,7 +75,6 @@ def getPatientNumber(string):
 
 # 爬取患者函数
 def getPatientList(url):  # 参数为url
-
     requrl = url
     USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36"
     HEADERS = {
@@ -113,7 +114,7 @@ def main():
         newsWeb = getWeb()
     except Exception as e:
         print("无法获取网页\n", e)
-
+    
     try:
         PatientDict = getPatientList('https:'+newsWeb)
     except Exception as e:
