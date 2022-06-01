@@ -30,12 +30,12 @@ def main():
     dangerPlaceLocation = {}
     try:
         key = open('key.txt','r').readlines()[0]
+        for item in dangerPlace:
+            info = Info(key, "北京", item)
+            x, y = getGDLocation(info)[0].split(',')
+            dangerPlaceLocation.update({item: [x, y]})
     except Exception as e:
         print("无法正常读取key.txt", e)
-    for item in dangerPlace:
-        info = Info(key, "北京", item)
-        x, y = getGDLocation(info)[0].split(',')
-        dangerPlaceLocation.update({item: [x, y]})
     
     with open("data/location.txt","w") as file:
         for item in dangerPlaceLocation:

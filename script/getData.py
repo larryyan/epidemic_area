@@ -1,18 +1,16 @@
-from cgitb import text
 import warnings
-
-warnings.filterwarnings("ignore")
 from urllib import request
 from bs4 import BeautifulSoup as bs
 import gzip
 import json
 import re
 
+warnings.filterwarnings("ignore")
+
 
 # 分析首页函数
 def getWeb():
     # 防止被网站禁用爬虫，增加headers
-    # USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18362"
     HEADERS = {
 
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -38,23 +36,24 @@ def getWeb():
     json_data = json.loads(resp.read())['data']['data']
 
     solution_url = ''
-    issue_time = '0'
 
     for item in json_data:
-        if issue_time != '0' and issue_time != item['issue_time']:
-            break
-        if item['catname'] != '首都':
+        if item['catname'] != '首都' and item['befrom'] != "北京日报客户端":
             continue
         title = item['title']
-        if title.find('一图速览')!=-1:
+        if title.find('一图速览') != -1:
             continue
         solution_url = item['title_url']
-        issue_time = item['issue_time']
+        break
 
     return solution_url
 
+
 def getPatientNumber(string):
     end = string.find('：')
+    if re.findall(r"\d+", string[:end]) == []:
+        return 1
+
     def num(text):
         dunhao = text.find('、')
         if dunhao == -1:
@@ -63,17 +62,18 @@ def getPatientNumber(string):
                 return 1
             else:
                 return int(num_list[1]) - int(num_list[0]) + 1
-        number = num(text[dunhao+1:])
+        number = num(text[dunhao + 1:])
         num_list = re.findall(r"\d+", text[:dunhao])
         if len(num_list) == 1:
             return 1 + number
         else:
             return int(num_list[1]) - int(num_list[0]) + 1 + number
+
     return num(string[:end])
+
 
 # 爬取患者函数
 def getPatientList(url):  # 参数为url
-
     requrl = url
     USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36"
     HEADERS = {
@@ -93,14 +93,14 @@ def getPatientList(url):  # 参数为url
     patientDict = {}
 
     for item in patientList_p:
-        if item.text.find('现住')==-1 or (item.text.find('确诊病例')==-1 and item.text.find('感染者')==-1):
+        if item.text.find('现住') == -1 or (item.text.find('确诊病例') == -1 and item.text.find('感染者') == -1):
             continue
-        beg = item.text.find('现住')+2
+        beg = item.text.find('现住') + 2
         end = item.text.find('。', beg)
-        if item.text.find('，', beg)!=-1:
+        if item.text.find('，', beg) != -1:
             end = min(end, item.text.find('，', beg))
-        if item.text.find('位于', 0, end)!=-1:
-            beg = max(beg, item.text.find('位于', 0, end)+2)
+        if item.text.find('位于', 0, end) != -1:
+            beg = max(beg, item.text.find('位于', 0, end) + 2)
         dangerPlace = item.text[beg:end]
         current_patient_number = patientDict.get(dangerPlace, 0)
         patientDict[dangerPlace] = getPatientNumber(item.text) + current_patient_number
@@ -111,18 +111,18 @@ def getPatientList(url):  # 参数为url
 def main():
     try:
         newsWeb = getWeb()
-    except Exception as e:
-        print("无法获取网页\n", e)
-
-    try:
-        PatientDict = getPatientList('https:'+newsWeb)
+        try:
+            PatientDict = getPatientList('https:' + newsWeb)
+            with open("data/location.txt", "w") as f1:
+                for item in PatientDict.keys():
+                    f1.writelines(item + '\n')
+            with open("data/number.txt", "w") as f2:
+                for item in PatientDict.values():
+                    f2.writelines(str(item) + '\n')
+        except Exception as e:
+            print("无法获取网页\n", e)
     except Exception as e:
         print("无法读取病例数据\n", e)
 
-    with open("data/location.txt","w") as f1:
-        for item in PatientDict.keys():
-            f1.writelines(item+'\n')
-    
-    with open("data/number.txt","w") as f2:
-        for item in PatientDict.values():
-            f2.writelines(str(item)+'\n')
+if __name__ == '__main__':
+    main()
