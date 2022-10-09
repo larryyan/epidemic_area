@@ -123,6 +123,3 @@ def main():
             print("无法获取网页\n", e)
     except Exception as e:
         print("无法读取病例数据\n", e)
-
-if __name__ == '__main__':
-    main()
