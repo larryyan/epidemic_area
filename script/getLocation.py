@@ -25,7 +25,7 @@ def getGDLocation(input):
     return ans
 
 def main():
-    dangerPlace = [l.split('\n')[0] for l in open("data/location.txt", "r").readlines()]
+    dangerPlace = [l.split('\n')[0] for l in open("data/location.txt", "r", encoding='utf-8').readlines()]
     
     dangerPlaceLocation = {}
     try:
@@ -37,7 +37,7 @@ def main():
     except Exception as e:
         print("无法正常读取key.txt", e)
     
-    with open("data/location.txt","w") as file:
+    with open("data/location.txt","w", encoding='utf-8') as file:
         for item in dangerPlaceLocation:
             loc = dangerPlaceLocation[item]
             file.writelines(item+' '+loc[0]+' '+loc[1]+'\n')

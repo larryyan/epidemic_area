@@ -3,7 +3,7 @@ from pyecharts.charts import Geo
 
 
 def main():
-    dangerLocation = [l.split('\n')[0] for l in open("data/location.txt", "r").readlines()]
+    dangerLocation = [l.split('\n')[0] for l in open("data/location.txt", "r", encoding='utf-8').readlines()]
     patientNum = [l.split('\n')[0] for l in open("data/number.txt", "r").readlines()]   
 
     maps = Geo().add_schema(maptype="北京")

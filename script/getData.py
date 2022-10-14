@@ -38,10 +38,10 @@ def getWeb():
     solution_url = ''
 
     for item in json_data:
-        if item['catname'] != '首都' and item['befrom'] != "北京日报客户端":
+        if item['catname'] != '首都' or item['befrom'] != "北京日报客户端":
             continue
         title = item['title']
-        if title.find('一图速览') != -1:
+        if title.find('一图速览') != -1 or title.find('疫情地图') != -1:
             continue
         solution_url = item['title_url']
         break
@@ -104,7 +104,6 @@ def getPatientList(url):  # 参数为url
         dangerPlace = item.text[beg:end]
         current_patient_number = patientDict.get(dangerPlace, 0)
         patientDict[dangerPlace] = getPatientNumber(item.text) + current_patient_number
-
     return patientDict
 
 
@@ -113,7 +112,7 @@ def main():
         newsWeb = getWeb()
         try:
             PatientDict = getPatientList('https:' + newsWeb)
-            with open("data/location.txt", "w") as f1:
+            with open("data/location.txt", "w", encoding='utf-8') as f1:
                 for item in PatientDict.keys():
                     f1.writelines(item + '\n')
             with open("data/number.txt", "w") as f2:
@@ -123,3 +122,6 @@ def main():
             print("无法获取网页\n", e)
     except Exception as e:
         print("无法读取病例数据\n", e)
+
+if __name__ == '__main__':
+    main()
