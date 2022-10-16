@@ -22,6 +22,10 @@ def getGDLocation(input):
     for i in range(len(jsonData['pois'])):
         num_location = jsonData['pois'][i]['location']
         ans.append(num_location)
+
+    if not ans:
+        input.keywords = input.keywords[input.keywords.find("区") + 1:]
+        ans = getGDLocation(input)
     return ans
 
 def main():
